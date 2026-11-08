@@ -1,4 +1,9 @@
 #include "systemcalls.h"
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <stdlib.h>
+#include <fcntl.h>
 
 /**
  * @param cmd the command to execute with system()
@@ -16,8 +21,11 @@ bool do_system(const char *cmd)
  *   and return a boolean true if the system() call completed with success
  *   or false() if it returned a failure
 */
-
-    return true;
+	if(system(cmd) == 0){
+    	return true;
+	} else{
+		return false;
+	}
 }
 
 /**
@@ -60,8 +68,26 @@ bool do_exec(int count, ...)
 */
 
     va_end(args);
-
-    return true;
+	
+	pid_t pid = fork();
+	if(pid < 0) {
+		perror("fork");
+		return false;
+	} else if (pid == 0) {
+		execv(command[0], command);
+		perror("execv");
+		exit(EXIT_FAILURE);
+	} else {
+		int status;
+		if(wait(&status) == -1) {
+			perror("wait");
+			return false;
+		}
+		if(WIFEXITED(status) && (WEXITSTATUS(status) == 0)) {
+			return true;
+		}
+	}
+	return false;
 }
 
 /**
@@ -95,5 +121,36 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
 
     va_end(args);
 
-    return true;
+	pid_t pid = fork();
+	if(pid < 0) {
+		perror("fork");
+		return false;
+	} else if (pid == 0) {
+		if(outputfile != NULL) {
+			int fd = open(outputfile, O_WRONLY|O_TRUNC|O_CREAT, 0644);
+			if(fd < 0) {
+				perror("open");
+				exit(EXIT_FAILURE);
+			}
+			if(dup2(fd,1) < 0) {
+				perror("dup2");
+				close(fd);
+				exit(EXIT_FAILURE);
+			}
+			close(fd);
+		}
+		execv(command[0], command);
+		perror("execv");
+		return false;
+	} else {
+		int status;
+		if(wait(&status) == -1) {
+			perror("wait");
+			return false;
+		}
+		if(WIFEXITED(status) && (WEXITSTATUS(status) == 0)) {
+			return true;
+		}
+	}
+    return false;
 }
