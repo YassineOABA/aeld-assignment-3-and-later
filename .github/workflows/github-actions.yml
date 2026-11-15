@@ -26,7 +26,7 @@ jobs:
             run: |
                 mkdir -p $HOME/bin
                 echo '#!/bin/sh' > $HOME/bin/nc
-                echo 'exec /bin/nc.traditional -q 1 "$@"' >> $HOME/bin/nc
+                echo 'exec /bin/nc -q 1 "$@"' >> $HOME/bin/nc
                 chmod +x $HOME/bin/nc
                 echo "$HOME/bin" >> $GITHUB_PATH
           - name: Run full test
