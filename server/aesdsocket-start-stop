@@ -1,0 +1,22 @@
+#!/bin/sh
+
+case "$1" in
+	start)
+		echo "Starting aesdsocket..."
+		/usr/bin/aesdsocket -d
+		;;
+	stop)
+		echo "Stopping aesdsocket..."
+		killall aesdsocket
+		;;
+	restart)
+		echo "Restarting aesdsocket..."
+		"$0" stop
+		"$0" start -d
+		;;
+	*)
+		echo "Usage: $0 {start | stop | restart}"
+		;;
+
+esac
+exit 0
