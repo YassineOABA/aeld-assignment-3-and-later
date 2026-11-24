@@ -1,4 +1,4 @@
-CC = $(CROSS_COMPILE)gcc
+CC ?= $(CROSS_COMPILE)gcc
 
 
 FLAGS = -g -O0 -Wall -Werror
