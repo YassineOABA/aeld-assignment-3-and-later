@@ -1,7 +1,7 @@
 CC ?= $(CROSS_COMPILE)gcc
 
 
-FLAGS = -g -O0 -Wall -Werror
+FLAGS = -Wall -Werror
 TARGET = aesdsocket 
 SRC = aesdsocket.c
 
